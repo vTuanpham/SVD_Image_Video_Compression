@@ -1,0 +1,296 @@
+WindowManager:
+    MainWindow:
+    ImageVideoWindow:
+    WebcamWindow:
+<MainWindow>:
+    name: "mainwindow"
+    srcmode: "empty"
+    ImageShow:
+        id: img
+        size_bg:bgL.size
+        pos_bg:bgL.pos
+        background_color: bgL.background_color
+    VideoShow:
+        id:vid
+        size_bg:bgL.size
+        pos_bg:bgL.pos
+        background_color: bgL.background_color
+    GridLayout:
+        rows:2
+        padding:10
+        BackgroundLabel:
+            id: bgL
+            text:"Drag and drop"
+            pos_hint:{"center_x":.5,"center_y":0.36}
+            background_color:.5,.5,.55,1
+            color:1,1,1,1
+            opacity: 1 if root.srcmode == 'empty' else 0
+        Options:
+            id: Opt
+            Button:
+                text:'Web cam'
+                size_hint:.12,.35
+                pos_hint:{"x":.1,"y":.2}
+                on_release:
+                    app.root.current = "webcamwindow"
+                    if root.manager != None: root.manager.transition.direction = "right"
+                    root.manager.screens[2].on_transit()
+            Button:
+                text:'Reset'
+                size_hint:.12,.35
+                pos_hint:{"x":.7,"y":.2}
+                on_release: root.reset(self)
+            Button:
+                text:'Next'
+                size_hint:.12,.35
+                pos_hint:{"x":.82,"y":.2}
+                on_release:
+                    app.root.current = "imagevidwindow" if root.filePath != '' else "mainwindow"
+                    if root.manager != None: root.manager.transition.direction = "left"
+                    if app.root.current == "imagevidwindow" and root.filePath != '': root.manager.screens[1].ids.showGrid.filePath = root.filePath
+                    root.manager.screens[1].on_transit(root.srcmode,root.filePath)
+                    if root.srcmode == 'video': root.ids.vid.state = 'pause'
+<ImageVideoWindow>:
+    name: "imagevidwindow"
+    GridLayout:
+        rows:2
+        padding:10
+        GridLayout:
+            cols:2
+            id: showGrid
+        Options:
+            id: Opt
+            Button:
+                size_hint:.23,.35
+                pos_hint:{"x":.05,"y":.4}
+                text:'Select rank options'
+                on_press: root.on_rank_dropdown(self)
+            BackgroundLabel:
+                text:'Rank: '
+                pos_hint:{"x":.0001,"y":.12}
+                size_hint: .28,.25
+                background_color:1,0,0,.5
+                font_size: 20
+                text_size:150,None
+                size_bg:self.size
+                pos_bg:self.pos
+                bold:True
+            TextInput:
+                id: rankinput
+                multiline:False
+                hint_text_color:1,0,0,.3
+                on_text_validate:root.on_enter_rank(self.text)
+                hint_text:'Enter rank'
+                input_filter:'int'
+                pos_hint:{"x":.125,"y":.118}
+                size_hint: .08,.26
+                foreground_color:0,0,1,.5
+            Label:
+                id: warning
+                text:'Must be larger than zero!'
+                pos_hint:{"x":.28,"y":.118}
+                size_hint: .08,.26
+                font_size:20
+                bold:True
+                color:1,0,0,1
+                opacity:0
+            Button:
+                text:'Select mode'
+                size_hint:.18,.27
+                pos_hint:{"x":.35,"y":.3}
+                on_press: root.on_mode_dropdown(self)
+            Button:
+                text:'Back'
+                size_hint:.1,.27
+                pos_hint:{"x":.7,"y":.3}
+                on_release:
+                    app.root.current = "mainwindow"
+                    root.manager.transition.direction = "right"
+                    root.ids.org.state = 'pause'
+                    root.manager.screens[1].children[0].children[1].clear_widgets()
+            Button:
+                text:'Process'
+                size_hint:.1,.27
+                pos_hint:{"x":.8,"y":.3}
+                on_release:
+                    root.ids.org.state = 'pause'
+                    if hasattr(root.ids.org, 'unload'): root.ids.org.unload()
+                    root.on_process(self,root.ids.org.source)
+<WebcamWindow>:
+    name: "webcamwindow"
+    GridLayout:
+        rows:2
+        padding:10
+        GridLayout:
+            cols:2
+            id: showGrid
+        Options:
+            id: Opt
+            Button:
+                size_hint:.23,.35
+                pos_hint:{"x":.05,"y":.4}
+                text:'Select rank options'
+                on_press: root.on_rank_dropdown(self)
+            BackgroundLabel:
+                text:'Rank: '
+                pos_hint:{"x":.0001,"y":.12}
+                size_hint: .28,.25
+                background_color:1,0,0,.5
+                font_size: 20
+                text_size:150,None
+                size_bg:self.size
+                pos_bg:self.pos
+                bold:True
+            TextInput:
+                id: rankinput
+                multiline:False
+                hint_text_color:1,0,0,.3
+                on_text_validate:root.on_enter_rank(self.text)
+                hint_text:'Enter rank'
+                input_filter:'int'
+                pos_hint:{"x":.125,"y":.118}
+                size_hint: .08,.26
+                foreground_color:0,0,1,.5
+            Label:
+                id: warning
+                text:'Must be larger than zero!'
+                pos_hint:{"x":.28,"y":.118}
+                size_hint: .08,.26
+                font_size:20
+                bold:True
+                color:1,0,0,1
+                opacity:0
+            Button:
+                text:'Select mode'
+                size_hint:.18,.27
+                pos_hint:{"x":.35,"y":.3}
+                on_press: root.on_mode_dropdown(self)
+            Button:
+                text:'Back'
+                size_hint:.1,.27
+                pos_hint:{"x":.7,"y":.3}
+                on_release:
+                    app.root.current = "mainwindow"
+                    root.manager.transition.direction = "left"
+                    root.manager.screens[2].on_back()
+                    root.manager.screens[2].children[0].children[1].clear_widgets()
+            Button:
+                text:'Reload'
+                size_hint:.1,.27
+                pos_hint:{"x":.8,"y":.3}
+                on_release:
+                    root.on_reload()
+<BackgroundColor@Widget>
+    background_color: 1,1,1,1
+    canvas.before:
+        Color:
+            rgba: root.background_color
+        Rectangle:
+            size:self.size
+            pos:self.pos
+<BackgroundLabel@Label+BackgroundColor>
+    background_color:0,0,0,0
+    text_size:170,None
+    font_size:25
+
+<CustomGridLaout@GridLayout>
+    cols:2
+
+
+
+<ImageShow@Image+Widget>
+    background_color:1,1,1,1
+    size_bg:(0,0)
+    pos_bg:(0,0)
+    pos_hint:{"center_x":.5,"center_y":.6}
+    size_hint: .8,.7
+    opacity:0 if root.source == None else 1
+    canvas.before:
+        Color:
+            rgba: root.background_color
+        Rectangle:
+            pos:(1,1) if root.source == None else root.pos_bg
+            size:(1,1) if root.source == None else root.size_bg
+
+<VideoShow@Video+Widget>
+    background_color:1,1,1,1
+    size_bg:(0,0)
+    pos_bg:(0,0)
+    pos_hint:{"center_x":.5,"center_y":.6}
+    size_hint: .8,.7
+    opacity:0 if root.source == None else 1
+    canvas.before:
+        Color:
+            rgba: root.background_color
+        Rectangle:
+            pos:(1,1) if root.source == None else root.pos_bg
+            size:(1,1) if root.source == None else root.size_bg
+
+<Options@FloatLayout>
+    size_hint_y: .2
+    size_hint_x: 1
+    background_color:1,1,0,1
+    canvas.before:
+        Color:
+            rgba:root.background_color
+        Rectangle:
+            size:self.size
+            pos:self.pos
+<RankDropDown>:
+    btnColor: 0,0,1
+    Button:
+        text:'Full rank'
+        size_hint_y:None
+        height:20
+        on_release: root.select('full')
+        background_color:root.btnColor
+    Label:
+        text:'Rank of size n'
+        size_hint_y:None
+        height:10
+    Button:
+        text:'Optimal rank'
+        size_hint_y:None
+        height:20
+        on_release:root.select('opt')
+        background_color:root.btnColor
+    Label:
+        text:'Best rank for lowest loss'
+        size_hint_y:None
+        height:10
+    Button:
+        text:'User selected'
+        size_hint_y:None
+        height:20
+        on_release:root.select('usr')
+        background_color:root.btnColor
+
+<ModeDropDown>:
+    btnColor: 0,0,1
+    Button:
+        text:'Red green blue'
+        size_hint_y:None
+        height:20
+        on_release: root.select('rgb')
+        background_color:root.btnColor
+    Button:
+        text:'Gray scale'
+        size_hint_y:None
+        height:20
+        on_release:root.select('gs')
+        background_color:root.btnColor
+    Button:
+        text:'Blue green red'
+        size_hint_y:None
+        height:20
+        on_release:root.select('bgr')
+        background_color:root.btnColor
+    Button:
+        text:'Green red blue'
+        size_hint_y:None
+        height:20
+        on_release:root.select('grb')
+        background_color:root.btnColor
+
+
+

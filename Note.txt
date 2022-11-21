@@ -1,0 +1,3 @@
+DemoSVDUI, svdbaend, svdtemplate là App
+
+SVD để demo webcam riêng lẻ
