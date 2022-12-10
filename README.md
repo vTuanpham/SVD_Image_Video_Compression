@@ -3,3 +3,5 @@ Image and video compression via singular value decomposition with user-interface
 
 
 **Simple application for image and video compression for demonstration purpose using singular value decomposition with user input rank (Level of compression)**
+
+Video compression has multithreading support with 5 frames parallel processing.
